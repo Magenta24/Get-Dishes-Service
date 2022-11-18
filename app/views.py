@@ -17,10 +17,10 @@ import string
 @app.route('/ingredient_categories')
 def get_categories():
     categories = IngredientCategory.query.all()
-    print(categories)
     json_categories = {}
+    json_categories['categories'] = []
     for c in categories:
-        json_categories[c.id] = { 'id': c.id, 'name': c.name }
+        json_categories['categories'].append({ 'id': c.id, 'name': c.name })
         
     return json.dumps(json_categories)
 
@@ -29,8 +29,9 @@ def get_categories():
 def get_ingredients():
     ingredients = Ingredient.query.all()
     json_ingr = {}
+    json_ingr['ingredients'] = []
     for i in ingredients:
-        json_ingr[i.id] = { 'id': i.id, 'name': i.name }
+        json_ingr['ingredients'].append({ 'id': i.id, 'name': i.name }) 
         
     return json.dumps(json_ingr)
 
@@ -52,9 +53,20 @@ def get_categorys_ingredients(category):
     return response
 
 # returns dishes that contain user's ingredients 
-@app.route('/dishes<ingredients>')
+@app.route('/dishes')
 def get_dishes():
-    pass
+    users_ingredients = []
+    for i in request.args.listvalues():
+        users_ingredients.append(i[0])
+    print(ingredients)
+
+    # getting ingredients from db
+    for i in users_ingredients:
+        ingredients.append(Ingredient.query.filter_by(i).id)
+
+    # getting dishes that contains given ingredients
+
+    return jsonify({'xd':'xdxd'})
 
 # returns dishes that contain user's ingredients 
 @app.route('/addUser')
