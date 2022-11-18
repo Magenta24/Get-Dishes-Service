@@ -38,5 +38,19 @@ class IngredientCategory(db.Model):
     def __repr__(self):
             return '{}{}'.format(self.id, self.name)
 
+#associative tables
+UserIngredients = db.Table('User_Ingredients', db.Model.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('User.id'), primary_key=True),
+    db.Column('ingredient_id', db.Integer, db.ForeignKey('Ingredient.id'), primary_key=True)
+)
+
+class User(db.Model):
+    __tablename__ = 'User'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    ingredients = db.relationship('Ingredient',secondary=UserIngredients, overlaps="User")
+
+    def __repr__(self):
+            return '{}{}'.format(self.id, self.name)
 
 
