@@ -6,10 +6,6 @@ DishIngredients = db.Table('Dish_Ingredients', db.Model.metadata,
     db.Column('ingredient_id', db.Integer, db.ForeignKey('Ingredient.id'), primary_key=True)
 )
 
-# concertParticipation = db.Table('concertParticipation', db.Model.metadata,
-#     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-#     db.Column('concert_id', db.Integer, db.ForeignKey('concerts.id'))
-# )
 
 class Dish(db.Model):
     __tablename__ = 'Dish'

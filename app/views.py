@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import sqlite3
 import sqlalchemy
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, intersect
 from app import app
 from app import db
 from app.models import Dish, Ingredient, DishIngredients, IngredientCategory
@@ -53,20 +53,55 @@ def get_categorys_ingredients(category):
     return response
 
 # returns dishes that contain user's ingredients 
-@app.route('/dishes')
+@app.route('/dishes', methods=['POST'])
 def get_dishes():
-    users_ingredients = []
-    for i in request.args.listvalues():
-        users_ingredients.append(i[0])
-    print(ingredients)
 
-    # getting ingredients from db
-    for i in users_ingredients:
-        ingredients.append(Ingredient.query.filter_by(i).id)
+    users_ingredients_ids = set() # ids of user's ingredients
+    users_ingredients_names = set() # ids of user's ingredients
+    json_user_ingr = request.get_json()
 
-    # getting dishes that contains given ingredients
+    # getting ingredients from db specified by user
+    for i in json_user_ingr:
+        if not json_user_ingr[i] == '...':
+            ingredient_id = (Ingredient.query.filter_by(name=json_user_ingr[i]).first())
+            print(ingredient_id)
+            users_ingredients_ids.add(ingredient_id.id)
+            users_ingredients_names.add(ingredient_id.name)
 
-    return jsonify({'xd':'xdxd'})
+    # print(users_ingredients)
+
+    possible_dishes = set()
+    dishes = set()              # stores final set of dishes
+
+    for i in users_ingredients_ids:
+        # getting all dishes that contain ingredient i
+        res = db.session.query(DishIngredients).filter_by(ingredient_id=i).all()
+        print(res)
+
+        # getting dish's id from result's tuple(dish_id, ingredient_id)
+        for d in res:
+            possible_dishes.add(d[0])
+
+    # checking if user has all ingridients for dishes in possible_dishes 
+    for pd in possible_dishes:
+        # print(pd)
+
+        # SELECT * FROM DishIngredients WHERE dish_id=pd;
+        res = db.session.query(DishIngredients).filter_by(dish_id=pd).all()
+        # print('ingredients needed for dish ', res)
+        ingredients_needed = set()
+
+        # getting ingredients needed for specific dish
+        for i in res:
+            ingredients_needed.add(i[1])
+
+        # checking if ingredients_needed is subset of users_ingredients
+        if ingredients_needed.issubset(users_ingredients_ids):
+            print('is subset: ', pd)
+            dishes.add((db.session.query(Dish).filter_by(id=pd).first()).name)
+
+    print('final dishes: ', jsonify(list(dishes)))
+    return jsonify(list(dishes))
 
 # returns dishes that contain user's ingredients 
 @app.route('/addUser')
