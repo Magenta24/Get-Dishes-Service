@@ -73,6 +73,7 @@ def get_dishes():
     possible_dishes = set()
     dishes = set()              # stores final set of dishes
 
+    # getting users ingredients ids
     for i in users_ingredients_ids:
         # getting all dishes that contain ingredient i
         res = db.session.query(DishIngredients).filter_by(ingredient_id=i).all()
@@ -88,7 +89,6 @@ def get_dishes():
 
         # SELECT * FROM DishIngredients WHERE dish_id=pd;
         res = db.session.query(DishIngredients).filter_by(dish_id=pd).all()
-        # print('ingredients needed for dish ', res)
         ingredients_needed = set()
 
         # getting ingredients needed for specific dish
@@ -100,8 +100,18 @@ def get_dishes():
             print('is subset: ', pd)
             dishes.add((db.session.query(Dish).filter_by(id=pd).first()).name)
 
-    print('final dishes: ', jsonify(list(dishes)))
     return jsonify(list(dishes))
+
+@app.route('/all_dishes')
+def get_all_dishes():
+    dishes = []
+    res = db.session.query(Dish).all()  
+    for d in res:
+        dishes.append(d.name)
+
+    return jsonify(dishes)
+
+
 
 # returns dishes that contain user's ingredients 
 @app.route('/addUser')
