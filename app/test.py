@@ -1,8 +1,15 @@
-import time
+# GET endpoints
+curl -X GET localhost:5000/ingredient_categories
+curl -X GET localhost:5000/ingredients
+curl -X GET localhost:5000/all_dishes
+curl -X GET localhost:5000/ingredients/Diary
 
-execution_times = []
-# running the service 10 times 
-for i in range(10):
-    start_time = time.time()
-    
-    end_time = time.time()
+# POST endpoints
+curl -X POST "localhost:5000/dishes" -H 'Content-Type: application/json' -d '{"ingredient1":"Tomato","ingredient2":"Onions","ingredient3":"Wheat Flour"}'
+curl -X POST "localhost:5000/add_ingredient" -d "name=Lettuce&category=Meat"
+
+# PUT endpoints
+curl -X PUT "localhost:5000/update_ingredient_category" -d "name=Lettuce&new_cat=Vegetables"
+
+# DELETE endpoints
+curl -X DELETE "localhost:5000/delete_ingredient/Sweet Potato"
