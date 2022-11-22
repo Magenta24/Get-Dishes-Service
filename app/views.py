@@ -106,14 +106,19 @@ def get_dishes():
 
         dishes_from_ingredients['dishes'].append(dish)
 
+    # print(dishes_from_ingredients)
     return jsonify(dishes_from_ingredients)
 
+# getting all available dishes in db along with ingredients needed for those dishes
 @app.route('/all_dishes')
 def get_all_dishes():
-    dishes = []
+    dishes = {}
     res = db.session.query(Dish).all()  
     for d in res:
-        dishes.append(d.name)
+        dishes[d.name] = []
+        for i in d.ingredients:
+            dishes[d.name].append(i.name)
+        
 
     return jsonify(dishes)
 
