@@ -106,7 +106,6 @@ def get_dishes():
 
         dishes_from_ingredients['dishes'].append(dish)
 
-    # print(dishes_from_ingredients)
     return jsonify(dishes_from_ingredients)
 
 # getting all available dishes in db along with ingredients needed for those dishes
@@ -121,7 +120,6 @@ def get_all_dishes():
         
 
     return jsonify(dishes)
-
 
 
 # adding new ingredient
@@ -148,17 +146,14 @@ def delete_ingredient(ingredient_name):
 
         return 'You just deleted: ' + ingredient_name
     except:
-        return 'There is no ingredient with such a name'
+        return 'Invalid data'
 
 # update ingredient
 @app.route('/update_ingredient_category', methods=['PUT'])
 def update_ingredient():
     try:
-        print(request.form)
         ingr_name = request.form.get('name')
         new_cat = request.form.get('new_cat')
-        print('new cat ', new_cat)
-        print('name ', ingr_name)
         new_cat_id = (IngredientCategory.query.filter_by(name=new_cat).first()).id
 
         db.session.query(Ingredient).filter_by(name=ingr_name).update({'category': new_cat_id})
